@@ -7,3 +7,5 @@ revdep/*
 inst/doc
 h2o_tests/*
 docs/
+data-raw/.DS_Store
+.DS_Store
