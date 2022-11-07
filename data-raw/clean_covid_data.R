@@ -2,7 +2,10 @@ library(readxl)
 library(tidyverse)
 library(stringi)
 
+setwd("~/dev/lime/")
 raw_data <- read_excel("data-raw/CovidTweetsCorpus/1000samples.xlsx")
+# label 1: negative 2: positive
+# new label 0: negative 1: positive
 
 clean_line <- function(string) {
     temp <- tolower(string)
@@ -23,16 +26,21 @@ clean_line <- function(string) {
 
 text_list <- map(raw_data$text, clean_line) %>% unlist()
 class_list <- raw_data$polarity
-df <- data.frame(text_list, class_list)
+df <- data.frame(text=text_list, text.class=class_list)
 
+# change text label
+df <- df %>% mutate(text.class = text.class - 1)
+
+# train, text split
 indexes <- sample(c(TRUE, FALSE), nrow(df), replace=TRUE, prob=c(0.7,0.3))
 
-train <- df[indexes,]
-test <- df[!indexes,]
+train_tweets <- df[indexes,]
+test_tweets <- df[!indexes,]
 
-save(train,file="data/covid_tweets/train_tweets.Rda")
-save(test,file="data/covid_tweets/test_tweets.Rda")
+DATA_DIR <- "data/covid_tweets"
+save(train_tweets, file=file.path(DATA_DIR, "train_tweets.Rda"))
+save(test_tweets, file=file.path(DATA_DIR, "test_tweets.Rda"))
 
-
+print(paste("data saved at", DATA_DIR))
 
 
